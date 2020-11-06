@@ -64,58 +64,62 @@ conn.close()
 
 # *****************************  DEFINICJE  ************************************
 
+
 def statystyka():
     rameczka = tk.LabelFrame(root, text="Statystyka", padx=5, pady=5)
     rameczka.pack(padx=5, pady=5, side=TOP)
 
-    canvas=tk.Canvas(rameczka, bg="white", width=600, height=500)
+    canvas = tk.Canvas(rameczka, bg="white", width=600, height=500)
 
-    liniay=canvas.create_line(70,50,70,450,fill="black", width=2)
-    liniax=canvas.create_line(67,450,530,450,fill="black", width=2)
+    liniay = canvas.create_line(70, 50, 70, 450, fill="black", width=2)
+    liniax = canvas.create_line(67, 450, 530, 450, fill="black", width=2)
 
-    skala=canvas.create_line(67,350,70,350, fill="black",width=1)
-    skala1=canvas.create_line(67,250,70,250, fill="black",width=1)
-    skala2=canvas.create_line(67,150,70,150, fill="black",width=1)
+    skala = canvas.create_line(67, 350, 70, 350, fill="black", width=1)
+    skala1 = canvas.create_line(67, 250, 70, 250, fill="black", width=1)
+    skala2 = canvas.create_line(67, 150, 70, 150, fill="black", width=1)
 
-    text=canvas.create_text(50,445,text="0")
-    text1=canvas.create_text(50,348,text="100")
-    text2=canvas.create_text(50,248, text="200")
-    text3=canvas.create_text(50,148, text="300")
+    text = canvas.create_text(50, 445, text="0")
+    text1 = canvas.create_text(50, 348, text="100")
+    text2 = canvas.create_text(50, 248, text="200")
+    text3 = canvas.create_text(50, 148, text="300")
 
-    x=73
+    x = 73
 
     conn = sqlite3.connect('baza.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM poziomy LIMIT 60" )
+    c.execute("SELECT * FROM poziomy LIMIT 60")
     records = c.fetchall()
     for rec in records:
-        liczba=str(rec[7])
-        liczba=int(liczba)
-        liczba2= 449-liczba
+        liczba = str(rec[7])
+        liczba = int(liczba)
+        liczba2 = 449-liczba
         if liczba >= 70 and liczba <= 99:
-            canvas.create_line(x,449,x,liczba2, fill ="#00FF00", width=5)
+            canvas.create_line(x, 449, x, liczba2, fill="#00FF00", width=5)
         elif liczba >= 100 and liczba <= 125:
-            canvas.create_line(x,449,x,liczba2, fill ="#FFD700", width=5)
-        elif liczba >=126:
-            canvas.create_line(x,449,x,liczba2, fill ="red", width=5)
+            canvas.create_line(x, 449, x, liczba2, fill="#FFD700", width=5)
+        elif liczba >= 126:
+            canvas.create_line(x, 449, x, liczba2, fill="red", width=5)
         else:
-            canvas.create_line(x,449,x,liczba2, fill ="#8B0000", width=5)
+            canvas.create_line(x, 449, x, liczba2, fill="#8B0000", width=5)
 
-        x+=7
+        x += 7
 
     conn.close()
 
-    liniaSkala = canvas.create_line(70,470,90,470, fill="#00FF00", width=15)
-    liniaSkala1 = canvas.create_line(70,490,90,490, fill="#FFD700", width=15)
-    liniaSkala2 = canvas.create_line(300,470,320,470, fill="red", width=15)
-    liniaSkala3 = canvas.create_line(300,490,320,490, fill="#8B0000", width=15)
+    liniaSkala = canvas.create_line(70, 470, 90, 470, fill="#00FF00", width=15)
+    liniaSkala1 = canvas.create_line(
+        70, 490, 90, 490, fill="#FFD700", width=15)
+    liniaSkala2 = canvas.create_line(300, 470, 320, 470, fill="red", width=15)
+    liniaSkala3 = canvas.create_line(
+        300, 490, 320, 490, fill="#8B0000", width=15)
 
-    text4=canvas.create_text(130,470,text="70-99 mg/dl")
-    text4=canvas.create_text(140,490,text="100-125 mg/dl")
-    text4=canvas.create_text(370,470,text="< 126 mg/dl")
-    text4=canvas.create_text(370,490,text="> 69 mg/dl")
+    text4 = canvas.create_text(130, 470, text="70-99 mg/dl")
+    text4 = canvas.create_text(140, 490, text="100-125 mg/dl")
+    text4 = canvas.create_text(370, 470, text="< 126 mg/dl")
+    text4 = canvas.create_text(370, 490, text="> 69 mg/dl")
 
     canvas.pack()
+
 
 def wyniki_pomiarow():
     def zamknij_pomiary():
@@ -372,6 +376,23 @@ def rejestracja_uzytkownika():
                   })
         conn.commit()
         conn.close()
+
+        date = strftime('%D')
+        hour = strftime('%T')
+        print(date)
+        print(hour)
+        conn = sqlite3.connect('baza.db')
+        c = conn.cursor()
+        c.execute("INSERT INTO waga VALUES(NULL, :data, :godzina, :wazenie)",
+                  {
+                      'data': date,
+                      'godzina': hour,
+                      'wazenie': waga_ins.get()
+
+                  })
+        conn.commit()
+        conn.close()
+
         messagebox.showinfo("Informacja", "Nowy użytkownik zapisany!!!")
         ramkaNowyUser.destroy()
 
