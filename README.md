@@ -18,3 +18,11 @@ Program jest w pełni darmowy, jednak jeśli ktoś chciałby mnie wesprzeć fina
 Wszelkie przekazane środki mam zamiar wykorzystać na rozwój projektu i kupienie nowszego sprzętu i materiałów dotyczących projektu.
 
 W razie jakichkolwiek pytań i sugestii proszę o kontakt: ilodz24hd@gmail.com
+
+**Wersja 1.0**
+Program pozwala:
+* dodawanie użytkownika
+* dodanie danych lekarza prowadzącego
+* dodawanie wyników pomiaru cukru
+* przeglądanie zapisanych dotąd wyników pomiaru cukru: po poszczególnych miesiącach lub całości
+* statystyka graficzna wyników badania cukru
