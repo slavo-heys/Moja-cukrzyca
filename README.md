@@ -12,8 +12,6 @@ i szybkiej reakcji wrazie zbyt wysokich i niskich poziomów.
 Program jest w pełni darmowy, jednak jeśli ktoś chciałby mnie wesprzeć finansowo to proszę o wpłaty:
 
 * Konto MBank: 52 1140 2004 0000 3202 7752 4865 z dopiskiem Dotacja
-* BTC: 1JMPAHeHFazAgEUHAiamcQSq5LgSiFv32K
-* ETH: 0x80778D7836E923e1D672337461938807F3fa4Df8
 
 Wszelkie przekazane środki mam zamiar wykorzystać na rozwój projektu i kupienie nowszego sprzętu i materiałów dotyczących projektu.
 
