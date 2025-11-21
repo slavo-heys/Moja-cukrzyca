@@ -19,6 +19,19 @@
 
 using namespace std;
 
+// Kolory ANSI (używane w większości terminali unixowych)
+const string COL_RESET = "\033[0m";
+const string COL_BOLD = "\033[1m";
+const string COL_RED = "\033[31m";
+const string COL_GREEN = "\033[32m";
+const string COL_YELLOW = "\033[33m";
+const string COL_BLUE = "\033[34m";
+const string COL_MAGENTA = "\033[35m";
+const string COL_CYAN = "\033[36m";
+
+// Helper: print colored text (wraps and resets)
+inline string c(const string &col, const string &s) { return col + s + COL_RESET; }
+
 // Ustawia rozmiar konsoli (nie gwarantowane we wszystkich terminalach)
 void set_console_size(int cols, int rows) {
 #ifdef _WIN32
@@ -67,6 +80,10 @@ void menu_glowne();
 void menu_dodaj_pomiar_glukozy();
 void menu_dodaj_uwage();
 void menu_dodaj_pomiar_wagi();
+void menu_wyswietl_historie_glukozy();
+void menu_wyswietl_historie_uwagi();
+void menu_wyswietl_historie_wagi();
+
 
 
 // Główna funkcja programu ######################################
@@ -146,55 +163,68 @@ void czyscc_ekran(){
     #endif
 }
 
-// Funkcja wyświetlająca menu główne programu
+// Funkcja wyświetlająca menu główne programu (działa w pętli aż do wybrania 0)
 void menu_glowne(){
-    czyscc_ekran();
     const int szerokosc = SZEROKOSC_MENU;
-    string wybor;
-    cout << endl;
-    cout << "+" << string(szerokosc, '=') << "+" << endl;
-    cout << "|" << string((szerokosc), ' ') << "|" << endl;
-    cout << "|" << string((szerokosc - 10) / 2, ' ') << "MENU GLOWNE" << string((szerokosc - 10) / 2, ' ') << "|" << endl;
-    cout << "|" << string((szerokosc), ' ') << "|" << endl;
-    cout << "+" << string(szerokosc, '=') << "+" << endl;
-    printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "", (szerokosc/2) - 2, "");
-    printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "1. Dodaj pomiar glukozy", (szerokosc/2) - 2, "4. Wyswietl historie pomiarow glukozy");
-    printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "", (szerokosc/2) - 2, "");
-    printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "2. Dodaj uwage", (szerokosc/2) - 2, "5. Wyswietl historie uwag");
-    printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "", (szerokosc/2) - 2, "");
-    printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "3. Dodaj pomiar wagi", (szerokosc/2) - 2, "6. Wyswietl historie pomiarow wagi");    
-    printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "", (szerokosc/2) - 2, "");
-    cout << "+" << string(szerokosc, '=') << "+" << endl;
-    printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "", (szerokosc/2) - 2, "");
-    printf("| %-*s | %-*s |\n", (szerokosc/2) - 1, "0. Zakończ program", (szerokosc/2) - 2, "10. Wydrukuj raport w pdf");
-    printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "", (szerokosc/2) - 2, "");
-    cout << "+" << string(szerokosc, '=') << "+" << endl;
-    printf("Wybierz opcje: ? ");
-    getline(cin>>ws, wybor);
-
-    if(wybor=="0"){
+    while (true) {
         czyscc_ekran();
-        cout << "Koniec programu. Do zobaczenia!" << endl;
-    } 
-    else if(wybor=="1"){
-        menu_dodaj_pomiar_glukozy();
-    }
-    else if(wybor=="2"){
-        menu_dodaj_uwage();
-    }
-    else if(wybor=="3"){
-        menu_dodaj_pomiar_wagi();
-    }
-    else if(wybor=="10"){
-        // Eksportuj raport PDF / filtr historii
-        // funkcja wydrukuj_raport_pdf zostanie wywołana
-        // (znajduje się poniżej)
-        extern void wydrukuj_raport_pdf();
-        wydrukuj_raport_pdf();
-    }
-    else{
-        cout << "Wybrano opcje: " << wybor << endl;
-        cout << "Funkcjonalnosc w trakcie implementacji..." << endl;
+        string wybor;
+        cout << endl;
+        cout << "+" << string(szerokosc, '=') << "+" << endl;
+        cout << "|" << string((szerokosc), ' ') << "|" << endl;
+        cout << "|" << string((szerokosc - 10) / 2, ' ') << c(COL_CYAN + COL_BOLD, "MENU GLOWNE") << string((szerokosc - 10) / 2, ' ') << "|" << endl;
+        cout << "|" << string((szerokosc), ' ') << "|" << endl;
+        cout << "+" << string(szerokosc, '=') << "+" << endl;
+        printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "", (szerokosc/2) - 2, "");
+        printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "1. Dodaj pomiar glukozy", (szerokosc/2) - 2, "4. Wyswietl historie pomiarow glukozy");
+        printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "", (szerokosc/2) - 2, "");
+        printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "2. Dodaj uwage", (szerokosc/2) - 2, "5. Wyswietl historie uwag");
+        printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "", (szerokosc/2) - 2, "");
+        printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "3. Dodaj pomiar wagi", (szerokosc/2) - 2, "6. Wyswietl historie pomiarow wagi");    
+        printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "", (szerokosc/2) - 2, "");
+        cout << "+" << string(szerokosc, '=') << "+" << endl;
+        printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "", (szerokosc/2) - 2, "");
+        printf("| %-*s | %-*s |\n", (szerokosc/2) - 1, "0. Zakończ program", (szerokosc/2) - 2, "10. Wydrukuj raport w pdf");
+        printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "", (szerokosc/2) - 2, "");
+        cout << "+" << string(szerokosc, '=') << "+" << endl;
+        printf("Wybierz opcje: ? ");
+        getline(cin>>ws, wybor);
+
+        if(wybor=="0"){
+            czyscc_ekran();
+            cout << c(COL_GREEN, "Koniec programu. Do zobaczenia!") << endl;
+            break; // wyjdz z petli i zakoncz funkcje
+        } 
+        else if(wybor=="1"){
+            menu_dodaj_pomiar_glukozy();
+        }
+        else if(wybor=="4"){
+            menu_wyswietl_historie_glukozy();
+        }
+        else if(wybor=="2"){
+            menu_dodaj_uwage();
+        }
+        else if(wybor=="5"){
+            menu_wyswietl_historie_uwagi();
+        }
+        else if(wybor=="3"){
+            menu_dodaj_pomiar_wagi();
+        }
+        else if(wybor=="6"){
+            menu_wyswietl_historie_wagi();
+        }
+        else if(wybor=="10"){
+            extern void wydrukuj_raport_pdf();
+            wydrukuj_raport_pdf();
+        }
+        else{
+            cout << c(COL_YELLOW, string("Wybrano opcje: ") + wybor) << endl;
+            cout << c(COL_YELLOW, "Funkcjonalnosc w trakcie implementacji...") << endl;
+            exit(0);
+        }
+        // po wykonaniu operacji - zaczekaj na naciśnięcie enter aby użytkownik mógł przeczytać komunikaty
+        cout << "\nNaciśnij Enter aby wrócić do menu...";
+        string tmp; getline(cin, tmp);
     }
 }
 
@@ -207,7 +237,7 @@ void menu_dodaj_pomiar_glukozy(){
 
     cout << "+" << string(szerokosc, '=') << "+" << endl;
     cout << "|" << string((szerokosc), ' ') << "|" << endl;
-    cout << "|" << string((szerokosc - 24) / 2, ' ') << "MENU DODAJ POMIAR GLUKOZY" << string((szerokosc - 24) / 2, ' ') << "|" << endl;
+    cout << "|" << string((szerokosc - 24) / 2, ' ') << c(COL_MAGENTA + COL_BOLD, "MENU DODAJ POMIAR GLUKOZY") << string((szerokosc - 24) / 2, ' ') << "|" << endl;
     cout << "|" << string((szerokosc), ' ') << "|" << endl;
     cout << "+" << string(szerokosc, '=') << "+" << endl;
 
@@ -311,11 +341,11 @@ void menu_dodaj_pomiar_glukozy(){
     // jeśli pole niepuste -> zapytaj czy nadpisać
     // zachowaj oryginalny format (po przycięciu)
     if (!fields[target_col].empty()) {
-        cout << "W tej kolumnie istnieje już wynik: '" << fields[target_col] << "'.\nCzy nadpisac? (T/N): ";
+        cout << c(COL_YELLOW, string("W tej kolumnie istnieje już wynik: '") + fields[target_col] + "'.\nCzy nadpisac? (T/N): ");
         string choice;
         getline(cin >> ws, choice);
         if (choice.empty() || (choice[0] != 'T' && choice[0] != 't')) {
-            cout << "Nie nadpisano istniejącego wyniku." << endl;
+            cout << c(COL_RED, "Nie nadpisano istniejącego wyniku.") << endl;
             return;
         }
     }
@@ -338,7 +368,7 @@ void menu_dodaj_pomiar_glukozy(){
     for (const auto &l : lines) outfile << l << "\n";
     outfile.close();
 
-    cout << "Pobrano wartosc " << pomiar_trim << " dla daty " << today << " w kolumnie ";
+    cout << c(COL_GREEN, string("Pobrano wartosc ") + pomiar_trim + " dla daty " + today + " w kolumnie ");
     switch (target_col) {
         case 1: cout << "PRZED_SNIADANIEM"; break;
         case 2: cout << "PO_SNIADANIU"; break;
@@ -356,7 +386,7 @@ void menu_dodaj_uwage(){
     cout << endl;
     cout << "+" << string(szerokosc, '=') << "+" << endl;
     cout << "|" << string((szerokosc), ' ') << "|" << endl;
-    cout << "|" << string((szerokosc - 12) / 2, ' ') << "DODAJ UWAGE" << string((szerokosc - 12) / 2, ' ') << "|" << endl;
+    cout << "|" << string((szerokosc - 12) / 2, ' ') << c(COL_MAGENTA + COL_BOLD, "DODAJ UWAGE") << string((szerokosc - 12) / 2, ' ') << "|" << endl;
     cout << "|" << string((szerokosc), ' ') << "|" << endl;
     cout << "+" << string(szerokosc, '=') << "+" << endl;
 
@@ -409,7 +439,7 @@ void menu_dodaj_pomiar_wagi()
     cout << endl;
     cout << "+" << string(szerokosc, '=') << "+" << endl;
     cout << "|" << string((szerokosc), ' ') << "|" << endl;
-    cout << "|" << string((szerokosc - 24) / 2, ' ') << "DODAJ POMIAR WAGI" << string((szerokosc - 24) / 2, ' ') << "|" << endl;
+    cout << "|" << string((szerokosc - 24) / 2, ' ') << c(COL_MAGENTA + COL_BOLD, "DODAJ POMIAR WAGI") << string((szerokosc - 24) / 2, ' ') << "|" << endl;
     cout << "|" << string((szerokosc), ' ') << "|" << endl;
     cout << "+" << string(szerokosc, '=') << "+" << endl;
 
@@ -431,7 +461,7 @@ void menu_dodaj_pomiar_wagi()
             string tmp;
             stringstream ssl(last);
             while (getline(ssl, tmp, ';')) fields.push_back(tmp);
-            cout << "Ostatni rekord: ";
+            cout << c(COL_CYAN, "Ostatni rekord: ");
             if (fields.size() >= 3) cout << fields[0] << " " << fields[1] << " - " << fields[2] << " kg";
             if (fields.size() >= 4) cout << " BMI: " << fields[3];
             if (fields.size() >= 5) cout << " (" << fields[4] << ")";
@@ -496,17 +526,14 @@ void menu_dodaj_pomiar_wagi()
             }
         }
         if (exists_today) {
-            cout << "Rekord dla dzisiejszej daty już istnieje: \n  " << lines[exists_index] << "\nCzy nadpisac? (T/N): ";
+            cout << c(COL_YELLOW, string("Rekord dla dzisiejszej daty już istnieje: \n  ") + lines[exists_index] + "\nCzy nadpisac? (T/N): ");
             string choice;
             getline(cin >> ws, choice);
             if (choice.empty() || (choice[0] != 'T' && choice[0] != 't')) {
-                cout << "Nie nadpisano istniejącego wpisu." << endl;
+                cout << c(COL_RED, "Nie nadpisano istniejącego wpisu.") << endl;
                 return;
             }
-            // jeśli użytkownik chce nadpisać, usuniemy istniejącą linię, a potem dopiszemy nową niżej (lub zastąpimy)
-            if (exists_index >= 0) {
-                // pozostawimy w lines nową linię w miejscu exists_index
-            }
+            // jeśli użytkownik chce nadpisać, zostawiamy miejsce exists_index do zastąpienia
         }
 
         // Pobierz wzrost użytkownika (cm).
@@ -653,11 +680,15 @@ void menu_dodaj_pomiar_wagi()
             outfile.close();
         }
 
-        cout << "Dodano pomiar wagi: " << wpis << " kg dla daty " << today << " o godzinie " << godz << ".\n";
+        cout << c(COL_GREEN, string("Dodano pomiar wagi: ") + wpis + " kg dla daty " + today + " o godzinie " + godz + ".") << "\n";
         // Wyświetl dodatkowe informacje dwie linie niżej: BMI i INFO
         cout << "\n\n";
-        cout << "BMI: " << bmi_ss.str() << "\n";
-        cout << "INFO: " << info << "\n";
+        cout << c(COL_CYAN, string("BMI: ") + bmi_ss.str()) << "\n";
+        // INFO kolorystycznie: zielone gdy w normie, żółte gdy nieduża odchyłka, czerwone gdy wysokie
+        string info_col = COL_GREEN;
+        if (info.find("wysokie") != string::npos || info.find("bardzo wysokie") != string::npos) info_col = COL_RED;
+        else if (info.find("srednie") != string::npos) info_col = COL_YELLOW;
+        cout << c(info_col, string("INFO: ") + info) << "\n";
     } catch (...) {
         cout << "Nieprawidlowy format wagi. Anulowano." << endl;
         return;
@@ -688,25 +719,56 @@ void wydrukuj_raport_pdf() {
         repmd << "## " << title << "\n\n";
         ifstream f(fname);
         bool any = false;
-            if (f) {
+        if (f) {
+            string header;
+            if (getline(f, header)) {
+                // parse header columns
+                vector<string> cols;
+                string cell;
+                stringstream hh(header);
+                while (getline(hh, cell, ';')) {
+                    if (!cell.empty()) cols.push_back(cell);
+                }
+                // prepare markdown table header if we have columns
+                if (!cols.empty()) {
+                    repmd << "|";
+                    for (const auto &cname : cols) repmd << " " << cname << " |";
+                    repmd << "\n|";
+                    for (size_t i = 0; i < cols.size(); ++i) repmd << " --- |";
+                    repmd << "\n";
+                }
+
                 string line;
-                // pomiń nagłówek
-                if (getline(f, line)) {
-                    while (getline(f, line)) {
-                        if (line.size() < 10) continue;
-                        string date = line.substr(0, 10);
-                        if (date >= cutoff) {
-                            rep << line << "\n";
-                            // also format for markdown: table row
-                            repmd << "- `" << line << "`\n";
-                            any = true;
+                while (getline(f, line)) {
+                    if (line.size() < 10) continue;
+                    string date = line.substr(0, 10);
+                    if (date >= cutoff) {
+                        rep << line << "\n";
+                        // split line into cells and write markdown row
+                        vector<string> cells;
+                        stringstream ss(line);
+                        string part;
+                        while (getline(ss, part, ';')) cells.push_back(part);
+                        if (!cells.empty()) {
+                            repmd << "|";
+                            for (size_t i = 0; i < cols.size(); ++i) {
+                                string out = "";
+                                if (i < cells.size()) out = cells[i];
+                                // escape pipe characters if any
+                                for (char &ch : out) if (ch == '|') ch = '/';
+                                repmd << " " << out << " |";
+                            }
+                            repmd << "\n";
                         }
+                        any = true;
                     }
                 }
+            }
             f.close();
         }
         if (!any) rep << "(brak danych)\n";
         rep << "\n";
+        repmd << "\n";
     };
 
     appendFiltered("dane.csv", "Pomiar glukozy");
@@ -741,4 +803,135 @@ void wydrukuj_raport_pdf() {
         }
         cout << "Utworzono tekstowy raport '" << reportFile << "'. Aby uzyskac PDF, zainstaluj 'pandoc' lub 'enscript' i 'ps2pdf'." << endl;
     }
+}
+
+void menu_wyswietl_historie_glukozy(){
+    czyscc_ekran();
+    const int szerokosc = SZEROKOSC_MENU;
+    cout << "\n";
+    cout << "+" << string(szerokosc, '=') << "+" << endl;
+    cout << "|" << string((szerokosc - 26) / 2, ' ') << c(COL_BLUE + COL_BOLD, "HISTORIA POMIAROW GLUKOZY") << string((szerokosc - 26) / 2, ' ') << "|" << endl;
+    cout << "+" << string(szerokosc, '=') << "+" << endl;
+
+    const string filename = "dane.csv";
+    ifstream f(filename);
+    if (!f) {
+        cout << c(COL_YELLOW, "(Brak pliku dane.csv)") << "\n";
+    } else {
+        string line;
+        // header
+        if (getline(f, line)) {
+            // print header labels
+            vector<string> cols;
+            string cell;
+            stringstream ss(line);
+            while (getline(ss, cell, ';')) if (!cell.empty()) cols.push_back(cell);
+            // print column headers
+            cout << c(COL_CYAN + COL_BOLD, "|");
+            for (size_t i = 0; i < cols.size(); ++i) {
+                cout << " " << c(COL_BOLD, cols[i]) << " |";
+            }
+            cout << "\n" << string(szerokosc, '-') << "\n";
+            // print rows
+            while (getline(f, line)) {
+                if (line.size() < 1) continue;
+                stringstream rs(line);
+                vector<string> cells;
+                string part;
+                while (getline(rs, part, ';')) cells.push_back(part);
+                // date first
+                if (cells.size() > 0) cout << c(COL_CYAN, cells[0]) << " ";
+                for (size_t i = 1; i < cells.size(); ++i) {
+                    string out = cells[i].empty() ? "-" : cells[i];
+                    string col = COL_GREEN;
+                    if (out == "-") col = COL_YELLOW;
+                    cout << "| " << c(col, out) << " ";
+                }
+                cout << "\n";
+            }
+        }
+        f.close();
+    }
+    cout << "\nNaciśnij Enter aby wrócić...";
+    string tmp; getline(cin, tmp);
+}
+
+void menu_wyswietl_historie_uwagi(){
+    czyscc_ekran();
+    const int szerokosc = SZEROKOSC_MENU;
+    cout << "\n";
+    cout << "+" << string(szerokosc, '=') << "+" << endl;
+    cout << "|" << string((szerokosc - 14) / 2, ' ') << c(COL_BLUE + COL_BOLD, "HISTORIA UWAG") << string((szerokosc - 14) / 2, ' ') << "|" << endl;
+    cout << "+" << string(szerokosc, '=') << "+" << endl;
+
+    const string filename = "uwagi.csv";
+    ifstream f(filename);
+    if (!f) {
+        cout << c(COL_YELLOW, "(Brak pliku uwagi.csv)") << "\n";
+    } else {
+        string line;
+        if (getline(f, line)) {
+            // header
+            cout << c(COL_BOLD, "DATA") << " | " << c(COL_BOLD, "GODZINA") << " | " << c(COL_BOLD, "TRESC") << "\n";
+            cout << string(szerokosc, '-') << "\n";
+            while (getline(f, line)) {
+                if (line.size() < 1) continue;
+                stringstream ss(line);
+                string d, g, t;
+                getline(ss, d, ';');
+                getline(ss, g, ';');
+                getline(ss, t, ';');
+                if (d.empty()) d = "-";
+                if (g.empty()) g = "-";
+                if (t.empty()) t = "-";
+                cout << c(COL_CYAN, d) << " | " << c(COL_GREEN, g) << " | " << c(COL_MAGENTA, t) << "\n";
+            }
+        }
+        f.close();
+    }
+    cout << "\nNaciśnij Enter aby wrócić...";
+    string tmp; getline(cin, tmp);
+}
+
+void menu_wyswietl_historie_wagi(){
+    czyscc_ekran();
+    const int szerokosc = SZEROKOSC_MENU;
+    cout << "\n";
+    cout << "+" << string(szerokosc, '=') << "+" << endl;
+    cout << "|" << string((szerokosc - 16) / 2, ' ') << c(COL_BLUE + COL_BOLD, "HISTORIA POMIAROW WAGI") << string((szerokosc - 16) / 2, ' ') << "|" << endl;
+    cout << "+" << string(szerokosc, '=') << "+" << endl;
+
+    const string filename = "waga.csv";
+    ifstream f(filename);
+    if (!f) {
+        cout << c(COL_YELLOW, "(Brak pliku waga.csv)") << "\n";
+    } else {
+        string line;
+        if (getline(f, line)) {
+            // header parse
+            vector<string> cols;
+            string cell;
+            stringstream hh(line);
+            while (getline(hh, cell, ';')) if (!cell.empty()) cols.push_back(cell);
+            // print header
+            for (size_t i = 0; i < cols.size(); ++i) cout << c(COL_BOLD, cols[i]) << (i+1<cols.size()?" | ":"\n");
+            cout << string(szerokosc, '-') << "\n";
+            while (getline(f, line)) {
+                if (line.size() < 1) continue;
+                stringstream ss(line);
+                vector<string> cells;
+                string part;
+                while (getline(ss, part, ';')) cells.push_back(part);
+                string date = cells.size()>0 && !cells[0].empty() ? cells[0] : "-";
+                string godz = cells.size()>1 && !cells[1].empty() ? cells[1] : "-";
+                string waga = cells.size()>2 && !cells[2].empty() ? cells[2] : "-";
+                string bmi = cells.size()>3 && !cells[3].empty() ? cells[3] : "-";
+                string info = cells.size()>4 && !cells[4].empty() ? cells[4] : "-";
+                cout << c(COL_CYAN, date) << " | " << c(COL_GREEN, godz) << " | " << c(COL_MAGENTA, waga) << " | " << c(COL_YELLOW, bmi) << " | " << c(COL_RED, info) << "\n";
+            }
+        }
+        f.close();
+    }
+    cout << "\nNaciśnij Enter aby wrócić...";
+    string tmp; getline(cin, tmp);
 }

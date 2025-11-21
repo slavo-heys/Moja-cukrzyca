@@ -15,6 +15,11 @@ clean:
 	rm -f $(OUT) report.txt report.pdf
 
 .PHONY: all run clean
+
+# Generate XLSX report from CSV
+xlsx:
+	python3 export_xlsx.py
+
 CXX = g++
 CXXFLAGS = -std=c++17 -O2 -Wall -Wextra
 SRC = start.cpp
