@@ -32,6 +32,23 @@ const string COL_CYAN = "\033[36m";
 // Helper: print colored text (wraps and resets)
 inline string c(const string &col, const string &s) { return col + s + COL_RESET; }
 
+// Trim helper
+inline string trim_str(const string &s) {
+    size_t a = s.find_first_not_of(" \t\r\n");
+    if (a == string::npos) return string("");
+    size_t b = s.find_last_not_of(" \t\r\n");
+    return s.substr(a, b - a + 1);
+}
+
+// Read a full line from stdin (returns trimmed)
+inline string read_line() {
+    string s;
+    if (!std::getline(cin, s)) return string("");
+    // strip CR if present
+    if (!s.empty() && s.back() == '\r') s.pop_back();
+    return trim_str(s);
+}
+
 // Ustawia rozmiar konsoli (nie gwarantowane we wszystkich terminalach)
 void set_console_size(int cols, int rows) {
 #ifdef _WIN32
@@ -188,7 +205,7 @@ void menu_glowne(){
         printf("| %-*s | %-*s |\n", (szerokosc/2) - 2, "", (szerokosc/2) - 2, "");
         cout << "+" << string(szerokosc, '=') << "+" << endl;
         printf("Wybierz opcje: ? ");
-        getline(cin>>ws, wybor);
+        wybor = read_line();
         // trim whitespace
         auto trim_local = [](string s){ size_t a = s.find_first_not_of(" \t\r\n"); if (a==string::npos) return string(""); size_t b = s.find_last_not_of(" \t\r\n"); return s.substr(a, b-a+1); };
         wybor = trim_local(wybor);
@@ -224,11 +241,16 @@ void menu_glowne(){
         else{
             cout << c(COL_YELLOW, string("Wybrano opcje: ") + wybor) << endl;
             cout << c(COL_YELLOW, "Funkcjonalnosc w trakcie implementacji...") << endl;
-            exit(0);
+            // zamiast zamykać program, wracamy do menu aby użytkownik mógł kontynuować
+            cout << c(COL_CYAN, "(wracam do menu)") << endl;
+            // krótka pauza — poczekaj na Enter
+            cout << "Naciśnij Enter...";
+            (void)read_line();
+            continue;
         }
         // po wykonaniu operacji - zaczekaj na naciśnięcie enter aby użytkownik mógł przeczytać komunikaty
         cout << "\nNaciśnij Enter aby wrócić do menu...";
-        string tmp; getline(cin, tmp);
+        (void)read_line();
     }
 }
 
@@ -247,7 +269,7 @@ void menu_dodaj_pomiar_glukozy(){
 
     // Pobierz wartość pomiaru od użytkownika
     printf("Podaj wartosc pomiaru glukozy (mg/dL): ? ");
-    getline(cin>>ws, pomiar);
+    pomiar = read_line();
 
     // Walidacja: spróbuj przekonwertować na liczbę (ale zachowamy oryginalny format podany przez użytkownika)
     string pomiar_trim = pomiar;
@@ -347,7 +369,7 @@ void menu_dodaj_pomiar_glukozy(){
     if (!fields[target_col].empty()) {
         cout << c(COL_YELLOW, string("W tej kolumnie istnieje już wynik: '") + fields[target_col] + "'.\nCzy nadpisac? (T/N): ");
         string choice;
-        getline(cin >> ws, choice);
+        choice = read_line();
         if (choice.empty() || (choice[0] != 'T' && choice[0] != 't')) {
             cout << c(COL_RED, "Nie nadpisano istniejącego wyniku.") << endl;
             return;
@@ -395,7 +417,7 @@ void menu_dodaj_uwage(){
     cout << "+" << string(szerokosc, '=') << "+" << endl;
 
     printf("Podaj tresc uwagi: ? ");
-    getline(cin >> ws, tresc);
+    tresc = read_line();
 
     // trim
     auto trim = [](string s){
@@ -474,7 +496,7 @@ void menu_dodaj_pomiar_wagi()
     }
 
     printf("Podaj wartosc wagi (kg): ? ");
-    getline(cin >> ws, wpis);
+    wpis = read_line();
 
     // trim
     auto trim = [](string s){
@@ -532,7 +554,7 @@ void menu_dodaj_pomiar_wagi()
         if (exists_today) {
             cout << c(COL_YELLOW, string("Rekord dla dzisiejszej daty już istnieje: \n  ") + lines[exists_index] + "\nCzy nadpisac? (T/N): ");
             string choice;
-            getline(cin >> ws, choice);
+            choice = read_line();
             if (choice.empty() || (choice[0] != 'T' && choice[0] != 't')) {
                 cout << c(COL_RED, "Nie nadpisano istniejącego wpisu.") << endl;
                 return;
@@ -567,7 +589,7 @@ void menu_dodaj_pomiar_wagi()
             // zapytaj użytkownika o wzrost
             cout << "Nie znaleziono zapisanego wzrostu. Podaj wzrost w cm (np. 175): ? ";
             string hinput;
-            getline(cin >> ws, hinput);
+            hinput = read_line();
             try {
                 for (char &c : hinput) if (c == ',') c = '.';
                 height_cm = stod(hinput);
@@ -578,7 +600,7 @@ void menu_dodaj_pomiar_wagi()
             // zapytaj czy zapisać
             cout << "Czy zapisac wzrost do pliku do dalszego uzycia? (T/N): ";
             string saveh;
-            getline(cin >> ws, saveh);
+            saveh = read_line();
             if (!saveh.empty() && (saveh[0]=='T' || saveh[0]=='t')) {
                 ofstream hfile_out(height_file, ios::trunc);
                 if (hfile_out) {
@@ -857,7 +879,7 @@ void menu_wyswietl_historie_glukozy(){
         f.close();
     }
     cout << "\nNaciśnij Enter aby wrócić...";
-    string tmp; getline(cin, tmp); if (tmp.empty()) getline(cin, tmp);
+    (void)read_line();
 }
 
 void menu_wyswietl_historie_uwagi(){
@@ -894,7 +916,7 @@ void menu_wyswietl_historie_uwagi(){
         f.close();
     }
     cout << "\nNaciśnij Enter aby wrócić...";
-    string tmp; getline(cin, tmp); if (tmp.empty()) getline(cin, tmp);
+    (void)read_line();
 }
 
 void menu_wyswietl_historie_wagi(){
@@ -937,5 +959,5 @@ void menu_wyswietl_historie_wagi(){
         f.close();
     }
     cout << "\nNaciśnij Enter aby wrócić...";
-    string tmp; getline(cin, tmp); if (tmp.empty()) getline(cin, tmp);
+    (void)read_line();
 }
