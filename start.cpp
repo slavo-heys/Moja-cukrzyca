@@ -189,8 +189,12 @@ void menu_glowne(){
         cout << "+" << string(szerokosc, '=') << "+" << endl;
         printf("Wybierz opcje: ? ");
         getline(cin>>ws, wybor);
+        // trim whitespace
+        auto trim_local = [](string s){ size_t a = s.find_first_not_of(" \t\r\n"); if (a==string::npos) return string(""); size_t b = s.find_last_not_of(" \t\r\n"); return s.substr(a, b-a+1); };
+        wybor = trim_local(wybor);
+        if (wybor.empty()) continue; // ignore empty input and redraw menu
 
-        if(wybor=="0"){
+        if(wybor=="0" || wybor=="q" || wybor=="Q"){
             czyscc_ekran();
             cout << c(COL_GREEN, "Koniec programu. Do zobaczenia!") << endl;
             break; // wyjdz z petli i zakoncz funkcje
@@ -853,7 +857,7 @@ void menu_wyswietl_historie_glukozy(){
         f.close();
     }
     cout << "\nNaciśnij Enter aby wrócić...";
-    string tmp; getline(cin, tmp);
+    string tmp; getline(cin, tmp); if (tmp.empty()) getline(cin, tmp);
 }
 
 void menu_wyswietl_historie_uwagi(){
@@ -890,7 +894,7 @@ void menu_wyswietl_historie_uwagi(){
         f.close();
     }
     cout << "\nNaciśnij Enter aby wrócić...";
-    string tmp; getline(cin, tmp);
+    string tmp; getline(cin, tmp); if (tmp.empty()) getline(cin, tmp);
 }
 
 void menu_wyswietl_historie_wagi(){
@@ -933,5 +937,5 @@ void menu_wyswietl_historie_wagi(){
         f.close();
     }
     cout << "\nNaciśnij Enter aby wrócić...";
-    string tmp; getline(cin, tmp);
+    string tmp; getline(cin, tmp); if (tmp.empty()) getline(cin, tmp);
 }
